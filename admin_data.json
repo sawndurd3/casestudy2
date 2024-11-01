@@ -1,0 +1,18 @@
+{
+    "01": {
+        "username": "adminuser1",
+        "email": "admin1@example.com",
+        "password": "iamsoyummy15",
+        "user_role": "admin",
+        "department": "IT",
+        "role_description": "Managing system data"
+    },
+    "02": {
+        "username": "adminuser2",
+        "email": "admin2@example.com",
+        "password": "dawdwa",
+        "user_role": "admin",
+        "department": "Sales",
+        "role_description": "Overseeing sales operations"
+    }
+}

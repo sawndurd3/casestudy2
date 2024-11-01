@@ -1,0 +1,18 @@
+{
+    "0001": {
+        "username": "sawndurd3",
+        "email": "eduardflores315@gmail.com",
+        "password": "iamsoyummy15",
+        "user_role": "customer",
+        "shipping_address": "Digos City",
+        "phone": "09072040021"
+    },
+    "0002": {
+        "username": "user1",
+        "email": "user1@gmail.com",
+        "password": "newpassword1",
+        "user_role": "customer",
+        "shipping_address": "Kabacan",
+        "phone": "0907231231"
+    }
+}
