@@ -1,10 +1,8 @@
-from entity import Entity
-
-class Cart(Entity):
+class Cart:
     cart_count = 0
 
     def __init__(self, cart_id, customer_id, items, total_amount):
-        super().__init__(cart_id, 'active')
+        self.cart_id = cart_id
         self.customer_id = customer_id
         self.items = items
         self.total_amount = total_amount

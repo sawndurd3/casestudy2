@@ -1,6 +1,8 @@
+# admin.py
 import json
 from user import User
 from system_logger import SystemLogger
+from product import Product
 
 class Admin(User):
 
@@ -20,28 +22,105 @@ class Admin(User):
         SystemLogger.log_info(f"Admin {self.username} logged out.")
 
     def reset_password(self):
-            new_password = input(f"Enter new password for admin {self.username}: ")
-            self._User__password = new_password  # Access the private password attribute
-            print(f"Password for admin {self.username} has been reset.")
-            SystemLogger.log_info(f"Admin {self.username}'s password reset.")
-            
-            self.save_admin_data(self)
+        new_password = input(f"Enter new password for admin {self.username}: ")
+        self._User__password = new_password  # Access the private password attribute
+        print(f"Password for admin {self.username} has been reset.")
+        SystemLogger.log_info(f"Admin {self.username}'s password reset.")
+        self.save_admin_data(self)
 
-    def add_product(self):
-        print("Product added.")
+    def add_product(self, product_id, name, price, stock_quantity, category):
+        # Create product and write to inventory.txt
+        product = Product(product_id, name, price, stock_quantity, category)
+        
+        # Save product details to the inventory file with correct field names
+        with open("inventory.txt", "a") as file:
+            file.write(f"Product ID: {product_id}\nName: {name}\nPrice: {price}\nStock Quantity: {stock_quantity}\nCategory: {category}\n\n")
+        
+        print("Product added successfully to inventory.")
+        self.sort_inventory_by_category()
 
+
+    def sort_inventory_by_category(self):
+        # Read all product entries from the file
+        with open("inventory.txt", "r") as file:
+            contents = file.read().strip()
+
+        # Split the contents by double newline to separate each product entry
+        product_entries = contents.split("\n\n")
+        
+        # Parse each product entry into a dictionary and store them in a list
+        products = []
+        for entry in product_entries:
+            lines = entry.split("\n")
+            try:
+                product_data = {
+                    "Product ID": lines[0].split(": ")[1],
+                    "Name": lines[1].split(": ")[1],
+                    "Price": float(lines[2].split(": ")[1]),
+                    "Stock Quantity": int(lines[3].split(": ")[1]),
+                    "Category": lines[4].split(": ")[1]
+                }
+                products.append(product_data)
+            except IndexError:
+                print("Error parsing product entry. Please check the file format.")
+                continue
+
+        # Sort the products list by 'Category'
+        products = sorted(products, key=lambda x: x["Category"])
+
+        # Write the sorted product entries back to the file in the new format
+        with open("inventory.txt", "w") as file:
+            for product in products:
+                file.write(
+                    f"Product ID: {product['Product ID']}\n"
+                    f"Name: {product['Name']}\n"
+                    f"Price: {product['Price']}\n"
+                    f"Stock Quantity: {product['Stock Quantity']}\n"
+                    f"Category: {product['Category']}\n\n"
+                )
     def remove_product(self):
-        print("Product removed.")
+        print("REMOVE PRODUCT")
+        product_id = input("Product ID: ")
 
-    def manage_users(self):
-        print("Managing users.")
+        # Read all product entries from the file
+        with open("inventory.txt", "r") as file:
+            contents = file.read().strip()
 
-    def generate_reports(self):
-        print("Generating reports.")
+        # Split the contents by double newline to separate each product entry
+        product_entries = contents.split("\n\n")
+        
+        # Find and remove the product entry with the matching product_id
+        updated_entries = []
+        product_found = False
+        for entry in product_entries:
+            if f"Product ID: {product_id}" not in entry:
+                updated_entries.append(entry)
+            else:
+                product_found = True
+        
+        if product_found:
+            # Write the updated list back to the file
+            with open("inventory.txt", "w") as file:
+                file.write("\n\n".join(updated_entries) + ("\n\n" if updated_entries else ""))
+            print(f"Product with ID {product_id} removed successfully.")
+        else:
+            print(f"No product found with ID {product_id}.")
 
+    def update_stock(self):
+        print("UPDATE STOCK")
+        product_id = input("Product ID: ")
+        try:
+            new_stock_quantity = int(input("New Stock Quantity: "))
+            # Call Product's update_stock method
+            if Product.update_stock(product_id, new_stock_quantity):
+                print(f"Stock quantity updated for Product ID {product_id}.")
+            else:
+                print(f"No product found with ID {product_id}.")
+        except ValueError:
+            print("Invalid stock quantity. Please enter a valid integer.")
+    
     @classmethod
     def load_admin_data(cls):
-        """Loads admin data from JSON file."""
         try:
             with open("admin_data.json", "r") as file:
                 data = json.load(file)
@@ -52,7 +131,6 @@ class Admin(User):
 
     @classmethod
     def save_admin_data(cls, admin):
-        """Saves the updated admin data back to the JSON file."""
         admin_data = cls.load_admin_data()
         admin_data[str(admin.admin_id)] = {
             "username": admin.username,
@@ -67,7 +145,6 @@ class Admin(User):
 
     @classmethod
     def authenticate_admin(cls, username, password):
-        """Authenticates admin credentials against stored data."""
         admin_data = cls.load_admin_data()
         for admin_id, admin_info in admin_data.items():
             if admin_info["username"] == username and admin_info["password"] == password:

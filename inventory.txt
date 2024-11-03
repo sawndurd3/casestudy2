@@ -1,0 +1,18 @@
+Product ID: 00002
+Name: Aircon
+Price: 3213.0
+Stock Quantity: 4
+Category: Appliances
+
+Product ID: 00001
+Name: PC
+Price: 232.0
+Stock Quantity: 3
+Category: Technology
+
+Product ID: 99092
+Name: Laptop
+Price: 232.0
+Stock Quantity: 5
+Category: Technology
+

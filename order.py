@@ -1,10 +1,8 @@
-from entity import Entity
-
-class Order(Entity):
+class Order:
     order_count = 0
 
     def __init__(self, order_id, customer_id, order_details, shipping_status, tracking_number):
-        super().__init__(order_id, 'pending')
+        self.order_id = order_id
         self.customer_id = customer_id
         self.order_details = order_details
         self.shipping_status = shipping_status
