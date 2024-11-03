@@ -11,7 +11,7 @@ def customer_menu(customer):
         choice = input("Enter choice: ").strip()
 
         if choice == "1":
-            view_products()
+            view_products(customer)  # Pass customer to view_products
         elif choice == "2":
             view_order_history(customer)
         elif choice == "3":
@@ -21,27 +21,26 @@ def customer_menu(customer):
             break
         else:
             print("Invalid choice. Please try again.")
-            
+
 def view_order_history(customer):
-    # Placeholder function to display order history
     print(f"\nOrder History for Customer {customer.customer_id}")
-    # You can replace the following with actual logic to retrieve and display order history
-    print("No order history available yet.")
+    print("No order history available yet.")  # Placeholder for actual order history logic
 
 def view_cart(customer):
-    # Placeholder function to display the cart
     print(f"\nCart for Customer {customer.customer_id}")
-    # You can replace the following with actual logic to retrieve and display cart items
-    print("Your cart is currently empty.")
-
-def view_products():
-    # Step 1: Display Categories
+    if not customer.cart.items:
+        print("Your cart is currently empty.")
+    else:
+        for item in customer.cart.items:
+            print(f"{item[0]}: {item[1]} unit(s)")
+            
+def view_products(customer):
     categories = Product.get_categories()
     print("\nAvailable Categories:")
     for i, category in enumerate(categories, 1):
         print(f"{i}. {category}")
     print(f"{len(categories) + 1}. Back")
-    
+
     category_choice = input("On what category would you like to shop? ").strip()
     try:
         category_index = int(category_choice) - 1
@@ -53,7 +52,6 @@ def view_products():
         print("Invalid input. Returning to main menu.")
         return
 
-    # Step 2: Display Products in the Selected Category
     products = Product.get_products_by_category(selected_category)
     if not products:
         print(f"No products available in the {selected_category} category.")
@@ -75,7 +73,6 @@ def view_products():
         print("Invalid input. Returning to category selection.")
         return
 
-    # Step 3: Display Product Details
     product_details = Product.get_product_details(selected_product["Product ID"])
     if product_details:
         print("\nProduct Details:")
@@ -83,6 +80,40 @@ def view_products():
             print(f"{key}: {value}")
     else:
         print("Error retrieving product details.")
+        return
+
+    print("\n1. Add to Cart\n2. Check Out")
+    action_choice = input("What would you like to do with this product? ").strip()
+
+    if action_choice == "1":
+        try:
+            quantity = int(input("How many items would you like to add? ").strip())
+            if quantity <= 0:
+                print("Quantity must be a positive integer.")
+                return
+
+            customer.cart.add_to_cart(customer.customer_id, selected_product["Name"], quantity)
+            print(f"{quantity} units of {selected_product['Name']} added to your cart.")
+        except ValueError:
+            print("Invalid quantity. Please enter a positive integer.")
+        
+    elif action_choice == "2":
+        print("Proceeding to checkout... (functionality to be implemented)")
+    else:
+        print("Invalid choice. Returning to product view.")
+
+
+def save_cart_to_file(customer):
+    """Saves the current cart items to a cart file named `cart_<customer_id>.txt`."""
+    with open(f"cart_{customer.customer_id}.txt", "w") as cart_file:
+        cart_file.write(f"Customer ID: {customer.customer_id}\n")
+        cart_file.write("Products added to Cart:\n")
+        
+        for item in customer.cart:
+            cart_file.write(f"{item['name']}: {item['quantity']}\n")
+
+        cart_file.write("\n\n")
+
 
 def customer_signup():
     print("Sign up as a new customer")

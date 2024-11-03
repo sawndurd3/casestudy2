@@ -1,19 +1,22 @@
 import json
 from user import User
 from system_logger import SystemLogger
+from cart import Cart
 
 class Customer(User):
     customer_count = 0
     _file_not_found_logged = False  # Class variable to track if the error has been logged
 
-    def __init__(self, username, email, password, user_role, customer_id, shipping_address='', phone='', cart=None, order_history=None):
+    def __init__(self, username, email, password, user_role, customer_id, shipping_address='', phone=''):
         super().__init__(username, email, password, user_role)
         self.customer_id = customer_id
         self.shipping_address = shipping_address
         self.phone = phone
-        self.cart = cart if cart else []
-        self.order_history = order_history if order_history else []
-        Customer.customer_count += 1
+        self.cart = Cart(cart_id=f"{customer_id}_cart", customer_id=customer_id, items=[], total_amount=0)
+        self.order_history = []
+
+    def add_to_cart(self, product_name, quantity):
+        self.cart.add_to_cart(self.customer_id, product_name, quantity)
 
     def login(self):
         SystemLogger.log_info(f"Customer {self.username} logged in.")

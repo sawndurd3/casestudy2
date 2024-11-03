@@ -10,9 +10,9 @@ Price: 232.0
 Stock Quantity: 3
 Category: Technology
 
-Product ID: 99092
-Name: Laptop
-Price: 232.0
-Stock Quantity: 5
+Product ID: 3213123
+Name: Keyboard
+Price: 23123.0
+Stock Quantity: 8
 Category: Technology
 
