@@ -55,7 +55,25 @@ class Product:
                         categories.add(line.split(": ")[1])
                         break
         return sorted(categories)
-
+    
+    @staticmethod
+    def get_product_details_by_name(product_name):
+        """
+        Retrieves product details by product name.
+        """
+        with open("inventory.txt", "r") as file:
+            contents = file.read().strip()
+            product_entries = contents.split("\n\n")
+            for entry in product_entries:
+                lines = entry.split("\n")
+                product_data = {}
+                for line in lines:
+                    key, value = line.split(": ", 1)
+                    product_data[key.strip()] = value.strip()
+                if product_data.get("Name").lower() == product_name.lower():
+                    return product_data
+        return None
+    
     @staticmethod
     def get_products_by_category(category):
         # Retrieve products within a specific category

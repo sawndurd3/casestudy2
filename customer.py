@@ -37,7 +37,7 @@ class Customer(User):
         print("Viewing order history:", self.order_history)
 
     def update_account(self):
-        print("Account updated.")
+        SystemLogger.log_info(f"Customer {self.username} account updated.")
 
     def reset_password(self):
         new_password = input(f"Enter new password for {self.username}: ")

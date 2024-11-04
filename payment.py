@@ -11,7 +11,7 @@ class Payment:
 
     def process_payment(self):
         self.payment_status = "completed"
-        print(f"Processing payment of {self.amount} for order {self.order_id}.")
+        print(f"Processing payment of {self.amount} for customer {self.order_id}.")
 
     def refund(self):
         self.payment_status = 'refunded'

@@ -96,7 +96,6 @@ def view_cart(customer):
         elif choice == "3":
             product_name = input("Enter the product name you want to delete: ").strip()
             delete_product_from_cart(customer.customer_id, product_name)
-            print(f"The item '{product_name}' is now deleted from the cart.")
             break
         
         elif choice == "4":
@@ -105,33 +104,70 @@ def view_cart(customer):
             print("Invalid choice. Please try again.")
 
 
+def delete_product_price_from_cart(customer_id, product_name):
+    """Helper function to find and delete a specific product's price from the total."""
+    
+    with open("cart.txt", "r") as file:
+        lines = file.readlines()
+
+    updated_lines = []
+    in_customer_cart = False
+    product_total = 0
+    product_found = False
+
+    for line in lines:
+        if line.strip() == f"Customer ID: {customer_id}":
+            in_customer_cart = True
+            updated_lines.append(line)
+            continue
+
+        if in_customer_cart and line.startswith("Customer ID:"):
+            in_customer_cart = False
+            updated_lines.append(line)
+            continue
+
+        if in_customer_cart and product_name in line:
+            match = re.search(rf"{re.escape(product_name)}:\s*(\d+),\s*Price:\s*([\d.]+)", line)
+            if match:
+                quantity = int(match.group(1))
+                price = float(match.group(2))
+                product_total = quantity * price
+                product_found = True
+            continue  # Skip this line to delete the product
+
+        if in_customer_cart and line.startswith("Total:"):
+            try:
+                existing_total = float(line.split(":")[1].replace(",", "").strip())
+                new_total = existing_total - product_total if product_found else existing_total
+                updated_lines.append(f"Total: {new_total:,.2f}\n")
+            except ValueError:
+                updated_lines.append(line)
+            continue
+
+        updated_lines.append(line)
+
+    with open("cart.txt", "w") as file:
+        file.writelines(updated_lines)
+
+    return product_found, product_total
+
 def checkout_product(customer, product_name, amount):
     # Create a payment instance and choose a payment method
     payment = Payment(payment_id=f"P{datetime.now().timestamp()}", order_id=customer.customer_id, amount=amount)
     payment.choose_payment_method()
-
+    
     # Process payment
     payment.process_payment()
+
+    # Delete the product from the cart and adjust total
+    product_found, product_total = delete_product_price_from_cart(customer.customer_id, product_name)
     
-    # Load and modify the cart file
-    with open("cart.txt", "r") as file:
-        lines = file.readlines()
-
-    with open("cart.txt", "w") as file:
-        in_customer_cart = False
-        for line in lines:
-            if line.strip() == f"Customer ID: {customer.customer_id}":
-                in_customer_cart = True
-                file.write(line)
-            elif line.startswith("Customer ID:"):
-                in_customer_cart = False
-                file.write(line)
-            elif in_customer_cart and product_name.lower() in line.lower():
-                continue
-            else:
-                file.write(line)
-
-    print(f"The product '{product_name}' has been checked out and removed from your cart.")
+    if product_found:
+        print(f"The product '{product_name}' has been checked out and removed from your cart")
+        print("View Order History to check order details")
+    else:
+        print(f"Product '{product_name}' bought by Customer: {customer.username}.")
+        print("View Order History to check order details")
 
 
 def checkout_all_products(customer, cart_items):
@@ -162,30 +198,68 @@ def checkout_all_products(customer, cart_items):
                 file.write(line)
 
     print("All items in your cart have been checked out and removed.")
+    print("View Order History to check order details")
+
 
 def delete_product_from_cart(customer_id, product_name):
-    """Delete a specific product from the cart in cart.txt for a given customer."""
+    """Delete a specific product from the cart in cart.txt for a given customer 
+    and adjust the customer's total price accordingly."""
+    
     with open("cart.txt", "r") as file:
         lines = file.readlines()
     
     updated_lines = []
     in_customer_cart = False
+    product_total = 0
+    product_found = False  # Track if the product was found and deleted
+
     for line in lines:
+        # Check if we are in the specified customer's section
         if line.strip() == f"Customer ID: {customer_id}":
             in_customer_cart = True
             updated_lines.append(line)
-        elif line.startswith("Customer ID:"):
+            continue
+
+        # If we hit another customer ID, we exit the current customer's section
+        if in_customer_cart and line.startswith("Customer ID:"):
             in_customer_cart = False
             updated_lines.append(line)
-        elif in_customer_cart and product_name in line:
-            continue  # Skip the line with the product to delete
-        else:
-            updated_lines.append(line)
-    
+            continue
+
+        # Process product line within the customer's section
+        if in_customer_cart and product_name in line:
+            # Use regex to parse the quantity and price for the specific product line
+            match = re.search(rf"{re.escape(product_name)}:\s*(\d+),\s*Price:\s*([\d.]+)", line)
+            if match:
+                quantity = int(match.group(1))
+                price = float(match.group(2))
+                product_total = quantity * price
+                product_found = True
+            continue  # Skip adding this line as we want to delete this product
+
+        # Adjust the total line if we're in the customer's section
+        if in_customer_cart and line.startswith("Total:"):
+            try:
+                existing_total = float(line.split(":")[1].replace(",", "").strip())
+                new_total = existing_total - product_total if product_found else existing_total
+                updated_lines.append(f"Total: {new_total:,.2f}\n")
+            except ValueError:
+                updated_lines.append(line)
+            continue
+
+        # Otherwise, keep the line as it is
+        updated_lines.append(line)
+
     # Write back the updated lines to cart.txt
     with open("cart.txt", "w") as file:
         file.writelines(updated_lines)
-            
+
+    # Provide feedback based on whether the product was found or not
+    if product_found:
+        print(f"The item '{product_name}' is now deleted from the cart.")
+    else:
+        print(f"Product '{product_name}' not found in the cart for customer {customer_id}.")
+
 def view_products(customer):
     # Step 1: Display Categories
     categories = Product.get_categories()
@@ -262,8 +336,11 @@ def view_products(customer):
             print("Invalid quantity. Please enter a positive integer.")
         
     elif action_choice == "2":
-        # Check Out (functionality could be added later as needed)
-        print("Proceeding to checkout... (functionality to be implemented)")
+        # Check Out
+        print("Proceeding to checkout...")
+        amount = float(selected_product["Price"])  # Assuming only 1 unit for checkout
+        checkout_product(customer, selected_product["Name"], amount)
+
     else:
         print("Invalid choice. Returning to product view.")
 
