@@ -2,7 +2,10 @@ from admin import Admin
 from customer import Customer
 from product import Product
 from system_logger import SystemLogger
+from payment import Payment
 import time
+import re
+from datetime import datetime
 
 def customer_menu(customer):
     while True:
@@ -28,19 +31,169 @@ def view_order_history(customer):
 
 def view_cart(customer):
     print(f"\nCart for Customer {customer.customer_id}")
-    if not customer.cart.items:
+    
+    # Load the cart items from the file for the specific customer
+    cart_items = []
+    with open("cart.txt", "r") as file:
+        lines = file.readlines()
+        
+        in_customer_cart = False
+        for line in lines:
+            if line.strip() == f"Customer ID: {customer.customer_id}":
+                in_customer_cart = True
+            elif line.startswith("Customer ID:"):
+                in_customer_cart = False
+            elif in_customer_cart and line.strip():
+                if line.startswith("Products added to Cart:") or line.startswith("Total:"):
+                    continue
+
+                match = re.match(r"(.+): (\d+), Price: ([\d.]+)  ---\(([\d.]+)\)", line.strip())
+                if match:
+                    product_name = match.group(1).strip()
+                    quantity = int(match.group(2).strip())
+                    unit_price = float(match.group(3).strip())
+                    total_price = float(match.group(4).strip())
+                    cart_items.append({
+                        "product": product_name,
+                        "quantity": quantity,
+                        "unit_price": unit_price,
+                        "total_price": total_price
+                    })
+                else:
+                    print(f"Skipping unrecognized line format: '{line.strip()}'")
+
+    if not cart_items:
         print("Your cart is currently empty.")
-    else:
-        for item in customer.cart.items:
-            print(f"{item[0]}: {item[1]} unit(s)")
+        return
+
+    print("\nItems in your cart:")
+    for item in cart_items:
+        print(f"{item['product']} - Quantity: {item['quantity']}, Unit Price: {item['unit_price']}, Total Price: {item['total_price']}")
+
+    while True:
+        print("\nWould you like to:")
+        print("1. Check out a product")
+        print("2. Check out all products")
+        print("3. Delete a product")
+        print("4. Back")
+        
+        choice = input("Enter choice: ").strip()
+        
+        if choice == "1":
+            product_name = input("Enter the product name you want to check out: ").strip()
+            for item in cart_items:
+                if item["product"].lower() == product_name.lower():
+                    checkout_product(customer, item["product"], item["total_price"])
+                    break
+            else:
+                print(f"Product '{product_name}' not found in the cart.")
+            break
+
+        elif choice == "2":
+            checkout_all_products(customer, cart_items)
+            break
+
+        elif choice == "3":
+            product_name = input("Enter the product name you want to delete: ").strip()
+            delete_product_from_cart(customer.customer_id, product_name)
+            print(f"The item '{product_name}' is now deleted from the cart.")
+            break
+        
+        elif choice == "4":
+            return
+        else:
+            print("Invalid choice. Please try again.")
+
+
+def checkout_product(customer, product_name, amount):
+    # Create a payment instance and choose a payment method
+    payment = Payment(payment_id=f"P{datetime.now().timestamp()}", order_id=customer.customer_id, amount=amount)
+    payment.choose_payment_method()
+
+    # Process payment
+    payment.process_payment()
+    
+    # Load and modify the cart file
+    with open("cart.txt", "r") as file:
+        lines = file.readlines()
+
+    with open("cart.txt", "w") as file:
+        in_customer_cart = False
+        for line in lines:
+            if line.strip() == f"Customer ID: {customer.customer_id}":
+                in_customer_cart = True
+                file.write(line)
+            elif line.startswith("Customer ID:"):
+                in_customer_cart = False
+                file.write(line)
+            elif in_customer_cart and product_name.lower() in line.lower():
+                continue
+            else:
+                file.write(line)
+
+    print(f"The product '{product_name}' has been checked out and removed from your cart.")
+
+
+def checkout_all_products(customer, cart_items):
+    # Calculate total amount for all items
+    total_amount = sum(item['total_price'] for item in cart_items)
+    
+    # Create a payment instance and choose a payment method
+    payment = Payment(payment_id=f"P{datetime.now().timestamp()}", order_id=customer.customer_id, amount=total_amount)
+    payment.choose_payment_method()
+
+    # Process payment
+    payment.process_payment()
+    
+    # Load and modify the cart file
+    with open("cart.txt", "r") as file:
+        lines = file.readlines()
+
+    with open("cart.txt", "w") as file:
+        in_customer_cart = False
+        for line in lines:
+            if line.strip() == f"Customer ID: {customer.customer_id}":
+                in_customer_cart = True
+                continue
+            elif line.startswith("Customer ID:"):
+                in_customer_cart = False
+                file.write(line)
+            elif not in_customer_cart:
+                file.write(line)
+
+    print("All items in your cart have been checked out and removed.")
+
+def delete_product_from_cart(customer_id, product_name):
+    """Delete a specific product from the cart in cart.txt for a given customer."""
+    with open("cart.txt", "r") as file:
+        lines = file.readlines()
+    
+    updated_lines = []
+    in_customer_cart = False
+    for line in lines:
+        if line.strip() == f"Customer ID: {customer_id}":
+            in_customer_cart = True
+            updated_lines.append(line)
+        elif line.startswith("Customer ID:"):
+            in_customer_cart = False
+            updated_lines.append(line)
+        elif in_customer_cart and product_name in line:
+            continue  # Skip the line with the product to delete
+        else:
+            updated_lines.append(line)
+    
+    # Write back the updated lines to cart.txt
+    with open("cart.txt", "w") as file:
+        file.writelines(updated_lines)
             
 def view_products(customer):
+    # Step 1: Display Categories
     categories = Product.get_categories()
     print("\nAvailable Categories:")
     for i, category in enumerate(categories, 1):
         print(f"{i}. {category}")
     print(f"{len(categories) + 1}. Back")
-
+    
     category_choice = input("On what category would you like to shop? ").strip()
     try:
         category_index = int(category_choice) - 1
@@ -52,6 +205,7 @@ def view_products(customer):
         print("Invalid input. Returning to main menu.")
         return
 
+    # Step 2: Display Products in the Selected Category
     products = Product.get_products_by_category(selected_category)
     if not products:
         print(f"No products available in the {selected_category} category.")
@@ -59,7 +213,7 @@ def view_products(customer):
 
     print(f"\nProducts in {selected_category} category:")
     for i, product in enumerate(products, 1):
-        print(f"{i}. {product['Name']}")
+        print(f"{i}. {product['Name']} - Price: {product['Price']}")
     print(f"{len(products) + 1}. Back")
 
     product_choice = input("What product are you interested in? ").strip()
@@ -73,6 +227,7 @@ def view_products(customer):
         print("Invalid input. Returning to category selection.")
         return
 
+    # Step 3: Display Product Details
     product_details = Product.get_product_details(selected_product["Product ID"])
     if product_details:
         print("\nProduct Details:")
@@ -82,29 +237,39 @@ def view_products(customer):
         print("Error retrieving product details.")
         return
 
+    # Step 4: Prompt for Add to Cart or Checkout
     print("\n1. Add to Cart\n2. Check Out")
     action_choice = input("What would you like to do with this product? ").strip()
 
     if action_choice == "1":
+        # Add to Cart
         try:
             quantity = int(input("How many items would you like to add? ").strip())
             if quantity <= 0:
                 print("Quantity must be a positive integer.")
                 return
 
-            customer.cart.add_to_cart(customer.customer_id, selected_product["Name"], quantity)
+            # Add the product to the cart with the price
+            customer.cart.add_to_cart(
+                customer_id=customer.customer_id,
+                product_name=selected_product["Name"],
+                quantity=quantity,
+                price=selected_product["Price"]
+            )
             print(f"{quantity} units of {selected_product['Name']} added to your cart.")
+
         except ValueError:
             print("Invalid quantity. Please enter a positive integer.")
         
     elif action_choice == "2":
+        # Check Out (functionality could be added later as needed)
         print("Proceeding to checkout... (functionality to be implemented)")
     else:
         print("Invalid choice. Returning to product view.")
 
 
 def save_cart_to_file(customer):
-    """Saves the current cart items to a cart file named `cart_<customer_id>.txt`."""
+    """Saves the current cart items to a cart file named cart_<customer_id>.txt."""
     with open(f"cart_{customer.customer_id}.txt", "w") as cart_file:
         cart_file.write(f"Customer ID: {customer.customer_id}\n")
         cart_file.write("Products added to Cart:\n")
@@ -315,5 +480,5 @@ def main():
     else:
         print("Invalid selection.")
 
-if __name__ == "__main__":
-    main()
+
+main()

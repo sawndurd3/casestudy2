@@ -1,18 +1,144 @@
-Product ID: 00002
-Name: Aircon
-Price: 3213.0
+Product ID: 02513
+Name: Wristwatch
+Price: 2500.0
+Stock Quantity: 12
+Category: Accessories
+
+Product ID: 09756
+Name: Sunglasses
+Price: 1500.0
+Stock Quantity: 20
+Category: Accessories
+
+Product ID: 08342
+Name: Necklace
+Price: 5000.0
+Stock Quantity: 7
+Category: Accessories
+
+Product ID: 04689
+Name: Bracelet
+Price: 1200.0
+Stock Quantity: 15
+Category: Accessories
+
+Product ID: 09451
+Name: Hat
+Price: 600.0
+Stock Quantity: 10
+Category: Accessories
+
+Product ID: 04125
+Name: Air Conditioner
+Price: 25000.0
+Stock Quantity: 5
+Category: Appliances
+
+Product ID: 05689
+Name: Refrigerator
+Price: 40000.0
 Stock Quantity: 4
 Category: Appliances
 
-Product ID: 00001
-Name: PC
-Price: 232.0
-Stock Quantity: 3
-Category: Technology
-
-Product ID: 3213123
-Name: Keyboard
-Price: 23123.0
+Product ID: 03847
+Name: Micorwave
+Price: 7000.0
 Stock Quantity: 8
-Category: Technology
+Category: Appliances
+
+Product ID: 01234
+Name: Washing Machine
+Price: 30000.0
+Stock Quantity: 3
+Category: Appliances
+
+Product ID: 09876
+Name: Blender
+Price: 3000.0
+Stock Quantity: 10
+Category: Appliances
+
+Product ID: 02984
+Name: Backpack
+Price: 3000.0
+Stock Quantity: 20
+Category: Bags
+
+Product ID: 07145
+Name: Handbag
+Price: 5000.0
+Stock Quantity: 10
+Category: Bags
+
+Product ID: 05416
+Name: Messenger Bag
+Price: 4000.0
+Stock Quantity: 8
+Category: Bags
+
+Product ID: 03289
+Name: Tote Bag
+Price: 1500.0
+Stock Quantity: 14
+Category: Bags
+
+Product ID: 01976
+Name: Laptop Bag
+Price: 2500.0
+Stock Quantity: 9
+Category: Bags
+
+Product ID: 07984
+Name: T-Shirt
+Price: 800.0
+Stock Quantity: 30
+Category: Clothes & Shoes
+
+Product ID: 06439
+Name: Jeans
+Price: 2000.0
+Stock Quantity: 18
+Category: Clothes & Shoes
+
+Product ID: 02358
+Name: Jacket
+Price: 3000.0
+Stock Quantity: 12
+Category: Clothes & Shoes
+
+Product ID: 05671
+Name: Sneakers
+Price: 3500.0
+Stock Quantity: 10
+Category: Clothes & Shoes
+
+Product ID: 02139
+Name: Smartphone
+Price: 20000.0
+Stock Quantity: 6
+Category: Gadgets
+
+Product ID: 06352
+Name: Laptop
+Price: 50000.0
+Stock Quantity: 4
+Category: Gadgets
+
+Product ID: 04813
+Name: Tablet
+Price: 10000.0
+Stock Quantity: 5
+Category: Gadgets
+
+Product ID: 03254
+Name: SmartWatch
+Price: 15000.0
+Stock Quantity: 7
+Category: Gadgets
+
+Product ID: 07123
+Name: Camera
+Price: 45000.0
+Stock Quantity: 3
+Category: Gadgets
 

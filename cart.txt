@@ -1,4 +1,5 @@
+
 Customer ID: 0001
 Products added to Cart:
-PC: 2
+Total: 46,000.00
 
