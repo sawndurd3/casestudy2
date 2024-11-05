@@ -1,12 +1,24 @@
 class Product:
     product_count = 0
 
-    def __init__(self, product_id, name, price, stock_quantity, category):
-        self.name = name
-        self.product_id = product_id
-        self.price = price
-        self.stock_quantity = stock_quantity
-        self.category = category
+    def __init__(self, product_id, name, price, stock_quantity, category, description, brand, color, size, weight, sku, discount, rating, review):
+        self.product_id = product_id             # Unique ID for each product
+        self.name = name                         # Name of the product
+        self.price = price                       # Price of the product
+        self.stock_quantity = stock_quantity     # How many items are in stock
+        self.category = category                 # Category/type of product
+        
+        # Additional attributes
+        self.description = description                  # Short description of the product
+        self.brand = brand                          # Brand name of the product
+        self.color = color                          # Color of the product
+        self.size = size                           # Size of the product (e.g., small, medium, large)
+        self.weight = weight                        # Weight of the product
+        self.sku = sku                            # SKU (Stock Keeping Unit) for inventory tracking
+        self.discount = discount                        # Discount percentage (if any)
+        self.rating = rating                          # Customer rating out of 5
+        self.review = review                 # Availability status (True/False)
+
         Product.product_count += 1
 
     @staticmethod
