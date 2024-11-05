@@ -1,0 +1,2 @@
+{"order_id": "O1730785792", "customer_id": "0001", "payment_mode": "Cash on Delivery", "shipping_address": "Digos City, Davao del Sur", "shipping_status": "Processing", "order_details": []}
+{"order_id": "O1730785868", "customer_id": "0001", "payment_mode": "Cash on Delivery", "shipping_address": "Digos City, Davao del Sur", "shipping_status": "Processing", "order_details": [{"product_name": "Messenger Bag", "quantity": 3, "price": "4000.0"}, {"product_name": "Microwave", "quantity": 3, "price": "7000.0"}]}

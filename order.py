@@ -4,7 +4,7 @@ class Order:
     def __init__(self, order_id, customer_id, order_details, payment_mode, shipping_address, shipping_status='Processing'):
         self.order_id = order_id
         self.customer_id = customer_id
-        self.order_details = order_details  # List of order items
+        self.order_details = order_details
         self.payment_mode = payment_mode
         self.shipping_address = shipping_address
         self.shipping_status = shipping_status

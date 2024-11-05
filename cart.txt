@@ -1,8 +1,9 @@
 
-Customer ID: 0002
+Customer ID: 0001
 Products added to Cart:
-Micorwave: 1, Price: 7000.0  ---(7000.0)
-Jeans: 3, Price: 2000.0  ---(6000.0)
-Tote Bag: 2, Price: 1500.0  ---(3000.0)
-Total: 16,000.00
+Microwave: 3, Price: 7000.0  ---(21000.0)
+Messenger Bag: 3, Price: 4000.0  ---(12000.0)
+Necklace: 1, Price: 5000.0  ---(5000.0)
+Camera: 2, Price: 45000.0  ---(90000.0)
+Total: 128,000.00
 

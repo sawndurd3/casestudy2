@@ -1,12 +1,19 @@
 class Product:
     product_count = 0
-
-    def __init__(self, product_id, name, price, stock_quantity, category):
-        self.name = name
+    def __init__(self, product_id, name, price, stock_quantity, category, description, brand, color, size, sku, discount, rating, review):
         self.product_id = product_id
+        self.name = name
         self.price = price
         self.stock_quantity = stock_quantity
         self.category = category
+        self.description = description
+        self.brand = brand
+        self.color = color
+        self.size = size
+        self.sku = sku
+        self.discount = discount
+        self.rating = rating
+        self.review = review
         Product.product_count += 1
 
     @staticmethod

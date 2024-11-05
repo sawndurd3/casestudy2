@@ -3,9 +3,9 @@ from customer import Customer
 from product import Product
 from system_logger import SystemLogger
 from payment import Payment
+from datetime import datetime  # Only this import from datetime module
 import time
 import re
-from datetime import datetime
 
 def customer_menu(customer):
     while True:
@@ -26,8 +26,7 @@ def customer_menu(customer):
             print("Invalid choice. Please try again.")
 
 def view_order_history(customer):
-    print(f"\nOrder History for Customer {customer.customer_id}")
-    print("No order history available yet.")  # Placeholder for actual order history logic
+    customer.view_order_history()
 
 def view_cart(customer):
     print(f"\nCart for Customer {customer.customer_id}")
@@ -78,7 +77,6 @@ def view_cart(customer):
         print("4. Back")
         
         choice = input("Enter choice: ").strip()
-        
         if choice == "1":
             product_name = input("Enter the product name you want to check out: ").strip()
             for item in cart_items:
@@ -154,7 +152,7 @@ def delete_product_price_from_cart(customer_id, product_name):
 def checkout_product(customer, product_name, amount):
     # Create a payment instance and choose a payment method
     payment = Payment(payment_id=f"P{datetime.now().timestamp()}", order_id=customer.customer_id, amount=amount)
-    payment.choose_payment_method()
+    payment.choose_payment_method()  # This sets the payment_method attribute
     
     # Process payment
     payment.process_payment()
@@ -163,12 +161,13 @@ def checkout_product(customer, product_name, amount):
     product_found, product_total = delete_product_price_from_cart(customer.customer_id, product_name)
     
     if product_found:
-        print(f"The product '{product_name}' has been checked out and removed from your cart")
-        print("View Order History to check order details")
+        print(f"The product '{product_name}' has been checked out and removed from your cart.")
     else:
         print(f"Product '{product_name}' bought by Customer: {customer.username}.")
-        print("View Order History to check order details")
 
+    # Place and save the order to orders.txt
+    customer.place_order(payment_mode=payment.payment_method)  # Pass payment_method from Payment object
+    print("Order has been placed and saved to order history. View Order History to check order details.")
 
 def checkout_all_products(customer, cart_items):
     # Calculate total amount for all items
@@ -176,12 +175,14 @@ def checkout_all_products(customer, cart_items):
     
     # Create a payment instance and choose a payment method
     payment = Payment(payment_id=f"P{datetime.now().timestamp()}", order_id=customer.customer_id, amount=total_amount)
-    payment.choose_payment_method()
+    payment.choose_payment_method()  # This sets the payment_method attribute
 
     # Process payment
     payment.process_payment()
-    
-    # Load and modify the cart file
+
+    # Place the order and save it to orders.txt
+    customer.place_order(payment_mode=payment.payment_method)  # Pass payment_method from Payment object
+
     with open("cart.txt", "r") as file:
         lines = file.readlines()
 
@@ -197,8 +198,9 @@ def checkout_all_products(customer, cart_items):
             elif not in_customer_cart:
                 file.write(line)
 
+    # Clear the cart file (assuming other logic for clearing the cart is implemented)
     print("All items in your cart have been checked out and removed.")
-    print("View Order History to check order details")
+    print("Order has been placed and saved to order history. View Order History to check order details.")
 
 
 def delete_product_from_cart(customer_id, product_name):
@@ -444,11 +446,19 @@ def add_product(admin):
     price = float(input("Price: "))
     stock_quantity = int(input("Stock Quantity: "))
     category = input("Category: ")
+    description = input("Description: ")
+    brand = input("Brand: ")
+    color = input("Color: ")
+    size = input("Size: ")
+    sku = input("SKU: ")
+    discount = float(input("Discount: "))
+    rating = float(input("Rating (0-5): "))
+    review = input("Review: ")
     
-    admin.add_product(product_id, name, price, stock_quantity, category)
+    admin.add_product(product_id, name, price, stock_quantity, category, description, brand, color, size, sku, discount, rating, review)
     print("\nProduct added successfully!\n")
 
-def update_stock(product):
+def update_stock(admin):
     print("UPDATE STOCK")
     product_id = input("Enter Product ID to update stock: ")
     new_stock_quantity = int(input("Enter new stock quantity: "))
@@ -471,9 +481,17 @@ def update_stock(product):
             price = float(lines[2].split(": ")[1].strip())
             stock_quantity = int(lines[3].split(": ")[1].strip())
             category = lines[4].split(": ")[1].strip()
+            description = lines[5].split(": ")[1].strip()
+            brand = lines[6].split(": ")[1].strip()
+            color = lines[7].split(": ")[1].strip()
+            size = lines[8].split(": ")[1].strip()
+            sku = lines[10].split(": ")[1].strip()
+            discount = float(lines[11].split(": ")[1].strip())
+            rating = float(lines[12].split(": ")[1].strip())
+            review = lines[13].split(": ")[1].strip()
             
             # Create a Product instance
-            product = Product(product_id, name, price, stock_quantity, category)
+            product = Product(product_id, name, price, stock_quantity, category, description, brand, color, size, sku, discount, rating, review)
             
             # Update stock quantity using Product's update_stock method
             product.update_stock(new_stock_quantity)
@@ -484,7 +502,15 @@ def update_stock(product):
                                     f"Name: {product.name}\n"
                                     f"Price: {product.price}\n"
                                     f"Stock Quantity: {product.stock_quantity}\n"
-                                    f"Category: {product.category}\n")
+                                    f"Category: {product.category}\n"
+                                    f"Description: {product.description}\n"
+                                    f"Brand: {product.brand}\n"
+                                    f"Color: {product.color}\n"
+                                    f"Size: {product.size}\n"
+                                    f"SKU: {product.sku}\n"
+                                    f"Discount: {product.discount}\n"
+                                    f"Rating: {product.rating}\n"
+                                    f"Review: {product.review}\n")
         else:
             # Keep non-matching products as-is
             updated_products.append(entry)

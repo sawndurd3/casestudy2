@@ -2,25 +2,17 @@
     "0001": {
         "username": "customer1",
         "email": "customer1@gmail.com",
-        "password": "customerpassword1",
+        "password": "iamsoyummy15",
         "user_role": "customer",
-        "shipping_address": "Kabacan, Cotabato City",
-        "phone": "09566829787"
+        "shipping_address": "Digos City, Davao del Sur",
+        "phone": "09072040021"
     },
     "0002": {
         "username": "customer2",
         "email": "customer2@gmail.com",
-        "password": "customerpassword2",
+        "password": "iamsoyummy15",
         "user_role": "customer",
-        "shipping_address": "Digos City, Davao del Sur",
-        "phone": "0907040021"
-    },
-    "0003": {
-        "username": "customer3",
-        "email": "customer3@gmail.com",
-        "password": "customerpassword3",
-        "user_role": "customer",
-        "shipping_address": "Davao City",
-        "phone": "09321322005"
+        "shipping_address": "Kabacan, Cotabato",
+        "phone": "09566829787"
     }
 }

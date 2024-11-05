@@ -1,7 +1,10 @@
 import json
+from datetime import datetime  # Import the datetime class directly
 from user import User
 from system_logger import SystemLogger
 from cart import Cart
+from order import Order
+import os
 
 class Customer(User):
     customer_count = 0
@@ -14,6 +17,56 @@ class Customer(User):
         self.phone = phone
         self.cart = Cart(cart_id=f"{customer_id}_cart", customer_id=customer_id, items=[], total_amount=0)
         self.order_history = []
+
+    def place_order(self, payment_mode="Credit Card"):
+        # Create an order and add to order history
+        order = Order(
+            order_id=f"O{int(datetime.now().timestamp())}",
+            customer_id=self.customer_id,
+            order_details=self.cart.items,
+            payment_mode=payment_mode,
+            shipping_address=self.shipping_address
+        )
+        self.order_history.append(order)
+        
+        # Save the order to file
+        self.save_order_to_file(order)
+        
+        # Clear cart after placing order
+        self.cart.items.clear()
+        self.cart.total_amount = 0
+        print("Order placed successfully and saved to order history.")
+
+
+    def save_order_to_file(self, order):
+        # Check if orders.txt exists; if not, create it
+        if not os.path.exists("orders.txt"):
+            with open("orders.txt", "w") as file:
+                file.write("")  # Creates the file if it does not exist
+
+        # Append order details to orders.txt
+        order_summary = Order.order_summary(order)
+        with open("orders.txt", "a") as file:
+            file.write(json.dumps(order_summary) + "\n")
+
+    def view_order_history(self):
+        try:
+            with open("orders.txt", "r") as file:
+                print(f"Reading order history for customer {self.customer_id}")  # Debug line
+                orders = [json.loads(line) for line in file.readlines()]
+                for order in orders:
+                    if order["customer_id"] == self.customer_id:
+                        print(f"Order ID: {order['order_id']}")
+                        
+                        # Assuming order_details is a list of items where each item has a 'product_name'
+                        product_names = [item['product_name'] for item in order['order_details']]
+                        print(f"Products: {', '.join(product_names)}")  # Join the product names with a comma
+                        
+                        print(f"Payment Mode: {order['payment_mode']}")
+                        print(f"Shipping Address: {order['shipping_address']}")
+                        print(f"Status: {order['shipping_status']}\n")
+        except FileNotFoundError:
+            print("No order history available yet.")
 
     def add_to_cart(self, product_name, quantity):
         self.cart.add_to_cart(self.customer_id, product_name, quantity)
@@ -28,13 +81,6 @@ class Customer(User):
     def add_to_cart(self, item):
         self.cart.append(item)
         print(f"Item {item} added to cart.")
-
-    def place_order(self):
-        self.order_history.append(self.cart)
-        print("Order placed.")
-
-    def view_order_history(self):
-        print("Viewing order history:", self.order_history)
 
     def update_account(self):
         SystemLogger.log_info(f"Customer {self.username} account updated.")
