@@ -1,7 +1,7 @@
 Product ID: 02513
 Name: Wristwatch
 Price: 2500.0
-Stock Quantity: 9
+Stock Quantity: 6
 Category: Accessories
 Description: Stylish wristwatch with leather strap
 Brand: TimeKeeper
@@ -15,7 +15,7 @@ Review: I love this product.
 Product ID: 08342
 Name: Necklace
 Price: 5000.0
-Stock Quantity: 15
+Stock Quantity: 14
 Category: Accessories
 Description: Elegant gold-plated necklace
 Brand: GoldWave
@@ -169,7 +169,7 @@ Review: I love this product.
 Product ID: 03289
 Name: Tote Bag
 Price: 1500.0
-Stock Quantity: 14
+Stock Quantity: 12
 Category: Bags
 Description: Eco-friendly canvas tote bag
 Brand: GreenTote

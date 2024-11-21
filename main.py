@@ -482,7 +482,6 @@ def view_products(customer):
         except ValueError:
             print("Invalid quantity. Please enter a positive integer.")
 
-
     else:
         print("Invalid choice. Returning to product view.")
         

@@ -1,2 +1,2 @@
-{"order_id":"O1732192769","customer_id":"0003","payment_mode":"Cash on Delivery","shipping_address":"Kabacan","shipping_status":"Processing","order_details":[{"product_name":"Wristwatch","quantity":1,"price":2500.0}]}
-{"order_id":"O1732192851","customer_id":"0003","payment_mode":"Cash on Delivery","shipping_address":"Kabacan","shipping_status":"Processing","order_details":[{"product_name":"Wristwatch","quantity":1,"price":2500.0}]}
+{"order_id":"O1732200073","customer_id":"0003","payment_mode":"Cash on Delivery","shipping_address":"Kabacan","shipping_status":"Processing","order_details":[{"product_name":"Air Conditioner","quantity":1,"price":25000.0}]}
+{"order_id":"O1732200083","customer_id":"0003","payment_mode":"Cash on Delivery","shipping_address":"Kabacan","shipping_status":"Processing","order_details":[{"product_name":"Tote Bag","quantity":1,"price":1500.0}]}

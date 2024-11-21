@@ -96,6 +96,7 @@ class Cart:
         customer_section_found = False
         in_customer_section = False
         customer_total = 0
+        customer_id_found = False  # Flag to track customer section
 
         for line in lines:
             if line.strip() == f"Customer ID: {self.customer_id}":
@@ -114,18 +115,21 @@ class Cart:
                 continue
 
             if in_customer_section and line.startswith("Total:"):
-                updated_lines.append(f"Total: {customer_total:,.2f}\n")
-                in_customer_section = False  # Stop processing this customer's section
+                # Remove the old total line and add the new total
+                continue  # Skip old total line, it will be added later
 
             if not in_customer_section:
                 updated_lines.append(line)
 
+        # Add the total only once
         if customer_section_found:
-            # If the customer section was found and updated, write it back
-            with open("cart.txt", "w") as cart_file:
-                cart_file.writelines(updated_lines)
+            updated_lines.append(f"Total: {customer_total:,.2f}\n")
         else:
             print("Customer ID not found in the cart.")
+
+        # Write the updated lines back to the file
+        with open("cart.txt", "w") as cart_file:
+            cart_file.writelines(updated_lines)
 
     def view_cart(self):
         return self.items
