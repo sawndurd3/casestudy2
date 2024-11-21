@@ -14,5 +14,13 @@
         "user_role": "customer",
         "shipping_address": "Kabacan, Cotabato",
         "phone": "09566829787"
+    },
+    "0003": {
+        "username": "customer3",
+        "email": "customer3@gmail.com",
+        "password": "password3",
+        "user_role": "customer",
+        "shipping_address": "Kabacan",
+        "phone": "090721345512"
     }
 }

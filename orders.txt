@@ -1,2 +1,2 @@
-{"order_id": "O1730785792", "customer_id": "0001", "payment_mode": "Cash on Delivery", "shipping_address": "Digos City, Davao del Sur", "shipping_status": "Processing", "order_details": []}
-{"order_id": "O1730785868", "customer_id": "0001", "payment_mode": "Cash on Delivery", "shipping_address": "Digos City, Davao del Sur", "shipping_status": "Processing", "order_details": [{"product_name": "Messenger Bag", "quantity": 3, "price": "4000.0"}, {"product_name": "Microwave", "quantity": 3, "price": "7000.0"}]}
+{"order_id":"O1732192769","customer_id":"0003","payment_mode":"Cash on Delivery","shipping_address":"Kabacan","shipping_status":"Processing","order_details":[{"product_name":"Wristwatch","quantity":1,"price":2500.0}]}
+{"order_id":"O1732192851","customer_id":"0003","payment_mode":"Cash on Delivery","shipping_address":"Kabacan","shipping_status":"Processing","order_details":[{"product_name":"Wristwatch","quantity":1,"price":2500.0}]}

@@ -54,19 +54,34 @@ class Customer(User):
             with open("orders.txt", "r") as file:
                 print(f"Reading order history for customer {self.customer_id}")  # Debug line
                 orders = [json.loads(line) for line in file.readlines()]
+                
+                has_orders = False  # Track if the customer has any orders
                 for order in orders:
                     if order["customer_id"] == self.customer_id:
+                        has_orders = True
                         print(f"Order ID: {order['order_id']}")
                         
-                        # Assuming order_details is a list of items where each item has a 'product_name'
-                        product_names = [item['product_name'] for item in order['order_details']]
-                        print(f"Products: {', '.join(product_names)}")  # Join the product names with a comma
+                        # Extract product details from order_details
+                        if order["order_details"]:  # Check if order_details is not empty
+                            product_details = [
+                                f"{item.get('product_name', 'Unknown Product')} (Quantity: {item.get('quantity', 0)}, Price: {item.get('price', 'N/A')})"
+                                for item in order['order_details']
+                            ]
+                            print(f"Products: {', '.join(product_details)}")
+                        else:
+                            print("Products: None")
                         
                         print(f"Payment Mode: {order['payment_mode']}")
                         print(f"Shipping Address: {order['shipping_address']}")
                         print(f"Status: {order['shipping_status']}\n")
+                
+                if not has_orders:
+                    print("No orders found for this customer.")
         except FileNotFoundError:
             print("No order history available yet.")
+        except KeyError as e:
+            print(f"Error processing order history: Missing key {e}")
+
 
     def add_to_cart(self, product_name, quantity):
         self.cart.add_to_cart(self.customer_id, product_name, quantity)

@@ -67,7 +67,7 @@ class Cart:
             updated_lines.append(f"Total: {customer_total:,.2f}\n")
 
         if not customer_found:
-            updated_lines.append(f"\nCustomer ID: {customer_id}\n")
+            updated_lines.append(f"Customer ID: {customer_id}\n")
             updated_lines.append("Products added to Cart:\n")
             line_total = quantity * price
             updated_lines.append(f"{product_name}: {quantity}, Price: {price}  ---({line_total})\n")
@@ -76,9 +76,56 @@ class Cart:
         with open("cart.txt", "w") as cart_file:
             cart_file.writelines(updated_lines)
 
-    def remove_item(self, item):
-        self.items = [i for i in self.items if i['product_name'] != item]
-        print(f"Item {item} removed from cart.")
+    def remove_item(self, item_name):
+        # Remove the item from the in-memory list
+        self.items = [item for item in self.items if item['product_name'] != item_name]
+        print(f"Item {item_name} removed from cart.")
+
+        # Now update the cart.txt file to reflect the change
+        self.update_cart_file()
+
+    def update_cart_file(self):
+        # Rebuild the cart file with the updated list of items
+        try:
+            with open("cart.txt", "r") as cart_file:
+                lines = cart_file.readlines()
+        except FileNotFoundError:
+            lines = []
+
+        updated_lines = []
+        customer_section_found = False
+        in_customer_section = False
+        customer_total = 0
+
+        for line in lines:
+            if line.strip() == f"Customer ID: {self.customer_id}":
+                customer_section_found = True
+                in_customer_section = True
+                updated_lines.append(line)
+                continue
+
+            if in_customer_section and line.strip() == "Products added to Cart:":
+                updated_lines.append(line)
+                # Only include items that are still in the cart
+                for item in self.items:
+                    line_total = item["quantity"] * item["price"]
+                    updated_lines.append(f"{item['product_name']}: {item['quantity']}, Price: {item['price']}  ---({line_total})\n")
+                    customer_total += line_total
+                continue
+
+            if in_customer_section and line.startswith("Total:"):
+                updated_lines.append(f"Total: {customer_total:,.2f}\n")
+                in_customer_section = False  # Stop processing this customer's section
+
+            if not in_customer_section:
+                updated_lines.append(line)
+
+        if customer_section_found:
+            # If the customer section was found and updated, write it back
+            with open("cart.txt", "w") as cart_file:
+                cart_file.writelines(updated_lines)
+        else:
+            print("Customer ID not found in the cart.")
 
     def view_cart(self):
         return self.items

@@ -1,7 +1,7 @@
 Product ID: 02513
 Name: Wristwatch
 Price: 2500.0
-Stock Quantity: 12
+Stock Quantity: 9
 Category: Accessories
 Description: Stylish wristwatch with leather strap
 Brand: TimeKeeper
@@ -15,7 +15,7 @@ Review: I love this product.
 Product ID: 08342
 Name: Necklace
 Price: 5000.0
-Stock Quantity: 7
+Stock Quantity: 15
 Category: Accessories
 Description: Elegant gold-plated necklace
 Brand: GoldWave
@@ -29,7 +29,7 @@ Review: I love this product.
 Product ID: 04689
 Name: Bracelet
 Price: 1200.0
-Stock Quantity: 15
+Stock Quantity: 10
 Category: Accessories
 Description: Silver charm bracelet
 Brand: ShineBright
@@ -43,7 +43,7 @@ Review: I love this product.
 Product ID: 09451
 Name: Hat
 Price: 600.0
-Stock Quantity: 10
+Stock Quantity: 5
 Category: Accessories
 Description: Cotton baseball cap
 Brand: Hatify
@@ -57,7 +57,7 @@ Review: I love this product.
 Product ID: 04125
 Name: Air Conditioner
 Price: 25000.0
-Stock Quantity: 5
+Stock Quantity: 0
 Category: Appliances
 Description: Energy-efficient air conditioner
 Brand: CoolBreeze
@@ -127,7 +127,7 @@ Review: I love this product.
 Product ID: 02984
 Name: Backpack
 Price: 3000.0
-Stock Quantity: 20
+Stock Quantity: 18
 Category: Bags
 Description: Durable hiking backpack
 Brand: TrailBlaze
@@ -141,7 +141,7 @@ Review: I love this product.
 Product ID: 07145
 Name: Handbag
 Price: 5000.0
-Stock Quantity: 10
+Stock Quantity: 9
 Category: Bags
 Description: Leather handbag with shoulder strap
 Brand: LuxeCarry
@@ -155,7 +155,7 @@ Review: I love this product.
 Product ID: 05416
 Name: Messenger Bag
 Price: 4000.0
-Stock Quantity: 8
+Stock Quantity: 6
 Category: Bags
 Description: Compact messenger bag with laptop sleeve
 Brand: UrbanBag
@@ -253,7 +253,7 @@ Review: I love this product.
 Product ID: 02139
 Name: Smartphone
 Price: 20000.0
-Stock Quantity: 6
+Stock Quantity: 3
 Category: Gadgets
 Description: High-performance smartphone with AMOLED display
 Brand: TechNova
@@ -267,7 +267,7 @@ Review: I love this product.
 Product ID: 06352
 Name: Laptop
 Price: 50000.0
-Stock Quantity: 4
+Stock Quantity: 1
 Category: Gadgets
 Description: Powerful laptop with 16GB RAM
 Brand: PowerComp

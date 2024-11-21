@@ -3,7 +3,9 @@ from customer import Customer
 from product import Product
 from system_logger import SystemLogger
 from payment import Payment
+from order import Order
 from datetime import datetime  # Only this import from datetime module
+import json
 import time
 import re
 
@@ -78,13 +80,39 @@ def view_cart(customer):
         
         choice = input("Enter choice: ").strip()
         if choice == "1":
+            # Step 1: Prompt the user for the product name they want to check out
             product_name = input("Enter the product name you want to check out: ").strip()
-            for item in cart_items:
-                if item["product"].lower() == product_name.lower():
-                    checkout_product(customer, item["product"], item["total_price"])
-                    break
+
+            # Step 2: Retrieve product details from the inventory
+            product_data = Product.get_product_details_by_name(product_name)
+
+            if not product_data:
+                print(f"Product '{product_name}' not found.")
             else:
-                print(f"Product '{product_name}' not found in the cart.")
+                # Step 3: Show product details and prompt for quantity
+                print(f"Product: {product_data['Name']}")
+                print(f"Price: {product_data['Price']}")
+                print(f"Stock Quantity: {product_data['Stock Quantity']}")
+
+                # Step 4: Prompt for quantity and validate input
+                try:
+                    quantity = int(input("How many items would you like to check out? ").strip())
+
+                    if quantity <= 0:
+                        print("Quantity must be a positive integer.")
+                    elif quantity > int(product_data['Stock Quantity']):
+                        print("Not enough stock available.")
+                    else:
+                        # Step 5: Calculate total price
+                        price = float(product_data["Price"])
+                        total_price = price * quantity
+
+                        # Step 6: Perform checkout immediately
+                        checkout_product(customer, product_name, quantity, total_price)
+                        print(f"Order for {product_name} has been placed successfully.")
+
+                except ValueError:
+                    print("Invalid quantity. Please enter a valid number.")
             break
 
         elif choice == "2":
@@ -149,40 +177,76 @@ def delete_product_price_from_cart(customer_id, product_name):
 
     return product_found, product_total
 
-def checkout_product(customer, product_name, amount):
-    # Create a payment instance and choose a payment method
-    payment = Payment(payment_id=f"P{datetime.now().timestamp()}", order_id=customer.customer_id, amount=amount)
-    payment.choose_payment_method()  # This sets the payment_method attribute
-    
-    # Process payment
+def checkout_product(customer, product_name, quantity, price):
+    # Create a unique payment ID using the current timestamp
+    payment = Payment(
+        payment_id=f"P{int(datetime.now().timestamp())}",
+        order_id=customer.customer_id,
+        amount=price * quantity
+    )
+
+    # Allow the customer to choose a payment method
+    payment.choose_payment_method()
+
+    # Process the payment and check if it succeeded
     payment.process_payment()
+    if payment.payment_status != "completed":
+        print("Payment failed. Transaction aborted.")
+        return
 
-    # Delete the product from the cart and adjust total
-    product_found, product_total = delete_product_price_from_cart(customer.customer_id, product_name)
-    
-    if product_found:
-        print(f"The product '{product_name}' has been checked out and removed from your cart.")
+    # Prepare order details
+    order_details = [{
+        "product_name": product_name,
+        "quantity": quantity,
+        "price": price
+    }]
+
+    # Create and save the order
+    order = Order(
+        order_id=f"O{int(datetime.now().timestamp())}",
+        customer_id=customer.customer_id,
+        order_details=order_details,
+        payment_mode=payment.payment_method,
+        shipping_address=customer.shipping_address
+    )
+    order.save_order()
+
+    # Update inventory stock
+    product_data = Product.get_product_details_by_name(product_name)
+    if product_data:
+        current_stock = int(product_data["Stock Quantity"])
+        if current_stock < quantity:
+            print("Not enough stock to fulfill this order.")
+            return
+        Product.update_stock(product_data["Product ID"], current_stock - quantity)
+        print(f"Order for {product_name} has been placed, and inventory updated.")
     else:
-        print(f"Product '{product_name}' bought by Customer: {customer.username}.")
+        print("Product not found in inventory.")
 
-    # Place and save the order to orders.txt
-    customer.place_order(payment_mode=payment.payment_method)  # Pass payment_method from Payment object
-    print("Order has been placed and saved to order history. View Order History to check order details.")
+    # Remove the product from the cart after checkout
+    customer.cart.remove_item(product_name)
+
+    # Update the cart.txt file with the new cart content
+    customer.cart.update_cart_file()
+
+    print(f"Product {product_name} has been removed from your cart after checkout.")
 
 def checkout_all_products(customer, cart_items):
     # Calculate total amount for all items
-    total_amount = sum(item['total_price'] for item in cart_items)
+    total_amount = sum(item["total_price"] for item in cart_items)
     
     # Create a payment instance and choose a payment method
     payment = Payment(payment_id=f"P{datetime.now().timestamp()}", order_id=customer.customer_id, amount=total_amount)
-    payment.choose_payment_method()  # This sets the payment_method attribute
-
-    # Process payment
+    payment.choose_payment_method()
     payment.process_payment()
 
     # Place the order and save it to orders.txt
-    customer.place_order(payment_mode=payment.payment_method)  # Pass payment_method from Payment object
+    customer.place_order(payment_mode=payment.payment_method)
 
+    # Update inventory stock
+    update_stock_quantity(cart_items, "inventory.txt")
+
+    # Clear cart file
     with open("cart.txt", "r") as file:
         lines = file.readlines()
 
@@ -198,10 +262,69 @@ def checkout_all_products(customer, cart_items):
             elif not in_customer_cart:
                 file.write(line)
 
-    # Clear the cart file (assuming other logic for clearing the cart is implemented)
     print("All items in your cart have been checked out and removed.")
-    print("Order has been placed and saved to order history. View Order History to check order details.")
+    print("Order has been placed and saved to order history.")
 
+def load_inventory_mapping(file_path):
+    """
+    Load inventory.txt and return a mapping of product names to product IDs.
+    """
+    inventory_mapping = {}
+    with open(file_path, "r") as file:
+        lines = file.readlines()
+        product_id = None
+        product_name = None
+
+        for line in lines:
+            if line.startswith("Product ID:"):
+                product_id = line.split(":")[1].strip()
+            elif line.startswith("Name:"):
+                product_name = line.split(":")[1].strip()
+                if product_id and product_name:
+                    inventory_mapping[product_name] = product_id
+                    product_id = None  # Reset for next product
+    return inventory_mapping
+
+def update_stock_quantity(cart_items, inventory_file):
+    """
+    Update the stock quantity in inventory.txt based on the cart items.
+    """
+    # Load inventory mapping (Product Name -> Product ID)
+    inventory_mapping = load_inventory_mapping(inventory_file)
+
+    # Load inventory data into a list
+    with open(inventory_file, "r") as file:
+        lines = file.readlines()
+
+    # Update stock quantities
+    updated_lines = []
+    for line in lines:
+        updated_lines.append(line)
+        if line.startswith("Product ID:"):
+            current_product_id = line.split(":")[1].strip()
+        elif line.startswith("Name:"):
+            current_product_name = line.split(":")[1].strip()
+        elif line.startswith("Stock Quantity:"):
+            for item in cart_items:
+                product_name = item["product"]  # Product name from cart
+                quantity_purchased = item["quantity"]
+
+                # Match product name to ID in inventory
+                if product_name in inventory_mapping:
+                    matching_product_id = inventory_mapping[product_name]
+
+                    # If IDs match, update stock
+                    if current_product_id == matching_product_id:
+                        current_stock = int(line.split(":")[1].strip())
+                        updated_stock = max(0, current_stock - quantity_purchased)
+                        updated_lines[-1] = f"Stock Quantity: {updated_stock}\n"
+                        break  # Exit loop for this cart item
+
+    # Write updated inventory back to the file
+    with open(inventory_file, "w") as file:
+        file.writelines(updated_lines)
+
+    print("Inventory updated successfully!")
 
 def delete_product_from_cart(customer_id, product_name):
     """Delete a specific product from the cart in cart.txt for a given customer 
@@ -330,23 +453,39 @@ def view_products(customer):
                 customer_id=customer.customer_id,
                 product_name=selected_product["Name"],
                 quantity=quantity,
-                price=selected_product["Price"]
+                price=float(selected_product["Price"])
             )
             print(f"{quantity} units of {selected_product['Name']} added to your cart.")
 
         except ValueError:
             print("Invalid quantity. Please enter a positive integer.")
-        
+
     elif action_choice == "2":
         # Check Out
-        print("Proceeding to checkout...")
-        amount = float(selected_product["Price"])  # Assuming only 1 unit for checkout
-        checkout_product(customer, selected_product["Name"], amount)
+        try:
+            quantity = int(input("How many items would you like to check out? ").strip())
+            if quantity <= 0:
+                print("Quantity must be a positive integer.")
+                return
+
+            print("Proceeding to checkout...")
+            price = float(selected_product["Price"])  # Get the price of the product
+
+            # Perform checkout immediately
+            checkout_product(
+                customer=customer,
+                product_name=selected_product["Name"],
+                quantity=quantity,
+                price=price
+            )
+
+        except ValueError:
+            print("Invalid quantity. Please enter a positive integer.")
+
 
     else:
         print("Invalid choice. Returning to product view.")
-
-
+        
 def save_cart_to_file(customer):
     """Saves the current cart items to a cart file named cart_<customer_id>.txt."""
     with open(f"cart_{customer.customer_id}.txt", "w") as cart_file:
