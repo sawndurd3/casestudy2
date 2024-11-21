@@ -39,7 +39,7 @@ def view_order_history(customer):
         customer_menu(customer)  # Back to customer menu
 
 def cancel_order(customer):
-    """Cancel an order from the order history."""
+    """Cancel an order from the order history and update stock quantities."""
     # Ask for the order ID
     order_id = input("Enter the order ID of the order you want to cancel: ").strip()
 
@@ -65,11 +65,14 @@ def cancel_order(customer):
     # Look for the order to cancel
     order_found = False
     updated_orders = []
+    canceled_order_details = []  # List to store canceled order's product details
 
     for order in orders:
         if order.get("order_id") == order_id:
             order_found = True
             print(f"Order {order_id} found. It will be canceled.")
+            # Store product details for stock update
+            canceled_order_details = order.get("order_details", [])
         else:
             updated_orders.append(order)
 
@@ -82,8 +85,47 @@ def cancel_order(customer):
                 file.write("\n")  # Add a newline between orders
         
         print(f"Order {order_id} has been successfully canceled and removed from your order history.")
+        
+        # Update stock quantities based on canceled order details
+        update_inventory_stock(canceled_order_details)
     else:
         print(f"Order ID {order_id} not found in your order history.")
+
+def update_inventory_stock(canceled_order_details):
+    """Increase stock quantity based on the canceled order details."""
+    # Load inventory data from the inventory.txt file
+    try:
+        with open("inventory.txt", "r") as file:
+            lines = file.readlines()
+    except FileNotFoundError:
+        print("Inventory file not found.")
+        return
+    
+    updated_lines = []
+    product_name = None
+    for i, line in enumerate(lines):
+        if "Name:" in line:
+            product_name = line.split(":")[1].strip()  # Get product name from the line
+        
+        if "Stock Quantity:" in line:
+            # Check if the canceled order has this product
+            for order_item in canceled_order_details:
+                if order_item["product_name"] == product_name:
+                    quantity_to_add = order_item["quantity"]
+                    # Extract the current stock and add the canceled quantity
+                    current_stock = int(line.split(":")[1].strip())
+                    updated_stock = current_stock + quantity_to_add
+                    # Modify the existing Stock Quantity line with updated stock
+                    lines[i] = f"Stock Quantity: {updated_stock}\n"
+                    break
+        
+        updated_lines.append(line)
+
+    # Write the updated inventory back to the file
+    with open("inventory.txt", "w") as file:
+        file.writelines(lines)
+
+    print("Stock quantities updated successfully.")
 
 def view_cart(customer):
     print(f"\nCart for Customer {customer.customer_id}")

@@ -1,7 +1,10 @@
 Product ID: 02513
 Name: Wristwatch
 Price: 2500.0
-Stock Quantity: 3
+Stock Quantity: 97
+Sold: 0
+Returned: 0
+Initial Stock: 99
 Category: Accessories
 Description: Stylish wristwatch with leather strap
 Brand: TimeKeeper
@@ -197,6 +200,7 @@ Review: I love this product.
 Product ID: 07984
 Name: T-Shirt
 Price: 800.0
+Stock Quantity: 28
 Stock Quantity: 26
 Category: Clothes & Shoes
 Description: 100% cotton crewneck t-shirt
