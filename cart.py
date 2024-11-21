@@ -125,7 +125,7 @@ class Cart:
         if customer_section_found:
             updated_lines.append(f"Total: {customer_total:,.2f}\n")
         else:
-            print("Customer ID not found in the cart.")
+            print("...")
 
         # Write the updated lines back to the file
         with open("cart.txt", "w") as cart_file:

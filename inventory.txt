@@ -1,7 +1,7 @@
 Product ID: 02513
 Name: Wristwatch
 Price: 2500.0
-Stock Quantity: 6
+Stock Quantity: 4
 Category: Accessories
 Description: Stylish wristwatch with leather strap
 Brand: TimeKeeper

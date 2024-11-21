@@ -229,8 +229,6 @@ def checkout_product(customer, product_name, quantity, price):
     # Update the cart.txt file with the new cart content
     customer.cart.update_cart_file()
 
-    print(f"Product {product_name} has been removed from your cart after checkout.")
-
 def checkout_all_products(customer, cart_items):
     # Calculate total amount for all items
     total_amount = sum(item["total_price"] for item in cart_items)
