@@ -1,4 +1,2 @@
-{"order_id":"O1732200073","customer_id":"0003","payment_mode":"Cash on Delivery","shipping_address":"Kabacan","shipping_status":"Processing","order_details":[{"product_name":"Air Conditioner","quantity":1,"price":25000.0}]}
-{"order_id":"O1732200083","customer_id":"0003","payment_mode":"Cash on Delivery","shipping_address":"Kabacan","shipping_status":"Processing","order_details":[{"product_name":"Tote Bag","quantity":1,"price":1500.0}]}
-{"order_id":"O1732200266","customer_id":"0001","payment_mode":"Cash on Delivery","shipping_address":"Digos City, Davao del Sur","shipping_status":"Processing","order_details":[{"product_name":"Wristwatch","quantity":1,"price":2500.0}]}
-{"order_id":"O1732200372","customer_id":"0001","payment_mode":"Cash on Delivery","shipping_address":"Digos City, Davao del Sur","shipping_status":"Processing","order_details":[{"product_name":"Wristwatch","quantity":1,"price":2500.0}]}
+{"order_id": "O1732201908", "customer_id": "0003", "payment_mode": "Cash on Delivery", "shipping_address": "Kabacan", "shipping_status": "Processing", "order_details": [{"product_name": "Smartphone", "quantity": 1, "price": 20000.0}]}
+{"order_id": "O1732201962", "customer_id": "0003", "payment_mode": "Cash on Delivery", "shipping_address": "Kabacan", "shipping_status": "Processing", "order_details": [{"product_name": "T-Shirt", "quantity": 2, "price": 800.0}]}

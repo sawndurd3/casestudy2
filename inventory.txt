@@ -1,7 +1,7 @@
 Product ID: 02513
 Name: Wristwatch
 Price: 2500.0
-Stock Quantity: 4
+Stock Quantity: 3
 Category: Accessories
 Description: Stylish wristwatch with leather strap
 Brand: TimeKeeper
@@ -29,7 +29,7 @@ Review: I love this product.
 Product ID: 04689
 Name: Bracelet
 Price: 1200.0
-Stock Quantity: 10
+Stock Quantity: 9
 Category: Accessories
 Description: Silver charm bracelet
 Brand: ShineBright
@@ -43,7 +43,7 @@ Review: I love this product.
 Product ID: 09451
 Name: Hat
 Price: 600.0
-Stock Quantity: 5
+Stock Quantity: 4
 Category: Accessories
 Description: Cotton baseball cap
 Brand: Hatify
@@ -197,7 +197,7 @@ Review: I love this product.
 Product ID: 07984
 Name: T-Shirt
 Price: 800.0
-Stock Quantity: 30
+Stock Quantity: 26
 Category: Clothes & Shoes
 Description: 100% cotton crewneck t-shirt
 Brand: SoftWear
@@ -253,7 +253,7 @@ Review: I love this product.
 Product ID: 02139
 Name: Smartphone
 Price: 20000.0
-Stock Quantity: 3
+Stock Quantity: 2
 Category: Gadgets
 Description: High-performance smartphone with AMOLED display
 Brand: TechNova

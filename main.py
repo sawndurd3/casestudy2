@@ -29,6 +29,61 @@ def customer_menu(customer):
 
 def view_order_history(customer):
     customer.view_order_history()
+    
+    # Ask if they want to cancel an order
+    cancel_choice = input("\nDo you want to cancel any of these orders? (yes/no): ").strip().lower()
+    if cancel_choice == "yes":
+        cancel_order(customer)  # Call cancel_order function
+    else:
+        print("Returning to the customer menu.")
+        customer_menu(customer)  # Back to customer menu
+
+def cancel_order(customer):
+    """Cancel an order from the order history."""
+    # Ask for the order ID
+    order_id = input("Enter the order ID of the order you want to cancel: ").strip()
+
+    # Try to read the orders file line by line as JSON objects
+    try:
+        with open("orders.txt", "r") as file:
+            lines = file.readlines()
+        
+        orders = []
+        for line in lines:
+            try:
+                # Load each line as a JSON object
+                order = json.loads(line.strip())
+                orders.append(order)
+            except json.JSONDecodeError:
+                print("Error reading an order line. Skipping invalid line.")
+                continue
+
+    except FileNotFoundError:
+        print("Orders file not found.")
+        return
+
+    # Look for the order to cancel
+    order_found = False
+    updated_orders = []
+
+    for order in orders:
+        if order.get("order_id") == order_id:
+            order_found = True
+            print(f"Order {order_id} found. It will be canceled.")
+        else:
+            updated_orders.append(order)
+
+    if order_found:
+        # Write the updated list of orders back to the file
+        with open("orders.txt", "w") as file:
+            for order in updated_orders:
+                # Write each order as a JSON string on a new line
+                json.dump(order, file)
+                file.write("\n")  # Add a newline between orders
+        
+        print(f"Order {order_id} has been successfully canceled and removed from your order history.")
+    else:
+        print(f"Order ID {order_id} not found in your order history.")
 
 def view_cart(customer):
     print(f"\nCart for Customer {customer.customer_id}")
@@ -92,7 +147,7 @@ def view_cart(customer):
                 # Step 3: Show product details and prompt for quantity
                 print(f"Product: {product_data['Name']}")
                 print(f"Price: {product_data['Price']}")
-                print(f"Stock Quantity: {product_data['Stock Quantity']}")
+                print(f"Balance: {product_data['Stock Quantity']}")
 
                 # Step 4: Prompt for quantity and validate input
                 try:

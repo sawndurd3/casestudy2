@@ -1,0 +1,3 @@
+Customer ID: 0003
+Products added to Cart:
+Total: 0.00

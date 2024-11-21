@@ -35,7 +35,7 @@ class Admin(User):
             file.write(f"Product ID: {product_id}\n"
                        f"Name: {name}\n"
                        f"Price: {price}\n"
-                       f"Stock Quantity: {stock_quantity}\n"
+                       f"Balance: {stock_quantity}\n"
                        f"Category: {category}\n"
                        f"Description: {description}\n"
                        f"Brand: {brand}\n"
