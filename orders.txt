@@ -1,1 +1,0 @@
-{"order_id": "O1732204104", "customer_id": "0001", "payment_mode": "Cash on Delivery", "shipping_address": "Digos City, Davao del Sur", "shipping_status": "Processing", "order_details": [{"product_name": "Wristwatch", "quantity": 1, "price": 2500.0}]}

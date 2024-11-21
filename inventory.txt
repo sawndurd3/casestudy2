@@ -1,9 +1,9 @@
 Product ID: 02513
 Name: Wristwatch
 Price: 2500.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
-Returned: 0
+Returned: 4
 Initial Stock: 99
 Category: Accessories
 Description: Stylish wristwatch with leather strap
@@ -18,9 +18,9 @@ Review: I love this product.
 Product ID: 08342
 Name: Necklace
 Price: 5000.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
-Returned: 0
+Returned: 1
 Initial Stock: 99
 Category: Accessories
 Description: Elegant gold-plated necklace
@@ -35,7 +35,7 @@ Review: I love this product.
 Product ID: 04689
 Name: Bracelet
 Price: 1200.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -52,7 +52,7 @@ Review: I love this product.
 Product ID: 09451
 Name: Hat
 Price: 600.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -69,7 +69,7 @@ Review: I love this product.
 Product ID: 04125
 Name: Air Conditioner
 Price: 25000.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -86,7 +86,7 @@ Review: I love this product.
 Product ID: 05689
 Name: Refrigerator
 Price: 40000.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -103,7 +103,7 @@ Review: I love this product.
 Product ID: 03847
 Name: Microwave
 Price: 7000.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -120,7 +120,7 @@ Review: I love this product.
 Product ID: 01234
 Name: Washing Machine
 Price: 30000.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -137,7 +137,7 @@ Review: I love this product.
 Product ID: 09876
 Name: Blender
 Price: 3000.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -154,7 +154,7 @@ Review: I love this product.
 Product ID: 02984
 Name: Backpack
 Price: 3000.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -171,7 +171,7 @@ Review: I love this product.
 Product ID: 07145
 Name: Handbag
 Price: 5000.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -188,7 +188,7 @@ Review: I love this product.
 Product ID: 05416
 Name: Messenger Bag
 Price: 4000.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -205,7 +205,7 @@ Review: I love this product.
 Product ID: 03289
 Name: Tote Bag
 Price: 1500.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -222,7 +222,7 @@ Review: I love this product.
 Product ID: 01976
 Name: Laptop Bag
 Price: 2500.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -239,7 +239,7 @@ Review: I love this product.
 Product ID: 07984
 Name: T-Shirt
 Price: 800.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -256,7 +256,7 @@ Review: I love this product.
 Product ID: 06439
 Name: Jeans
 Price: 2000.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -273,7 +273,7 @@ Review: I love this product.
 Product ID: 02358
 Name: Jacket
 Price: 3000.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -290,7 +290,7 @@ Review: I love this product.
 Product ID: 05671
 Name: Sneakers
 Price: 3500.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -307,7 +307,7 @@ Review: I love this product.
 Product ID: 02139
 Name: Smartphone
 Price: 20000.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -324,7 +324,7 @@ Review: I love this product.
 Product ID: 06352
 Name: Laptop
 Price: 50000.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -341,7 +341,7 @@ Review: I love this product.
 Product ID: 04813
 Name: Tablet
 Price: 10000.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -358,7 +358,7 @@ Review: I love this product.
 Product ID: 03254
 Name: SmartWatch
 Price: 15000.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99
@@ -375,7 +375,7 @@ Review: I love this product.
 Product ID: 07123
 Name: Camera
 Price: 45000.0
-Stock Quantity: 97
+Stock Quantity: 99
 Sold: 0
 Returned: 0
 Initial Stock: 99

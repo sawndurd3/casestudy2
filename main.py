@@ -35,15 +35,13 @@ def view_order_history(customer):
     if cancel_choice == "yes":
         cancel_order(customer)  # Call cancel_order function
     else:
-        print("Returning to the customer menu.")
         customer_menu(customer)  # Back to customer menu
 
 def cancel_order(customer):
-    """Cancel an order from the order history and update stock quantities."""
+    """Cancel an order from the order history."""
     # Ask for the order ID
     order_id = input("Enter the order ID of the order you want to cancel: ").strip()
 
-    # Try to read the orders file line by line as JSON objects
     try:
         with open("orders.txt", "r") as file:
             lines = file.readlines()
@@ -51,7 +49,6 @@ def cancel_order(customer):
         orders = []
         for line in lines:
             try:
-                # Load each line as a JSON object
                 order = json.loads(line.strip())
                 orders.append(order)
             except json.JSONDecodeError:
@@ -64,36 +61,34 @@ def cancel_order(customer):
 
     # Look for the order to cancel
     order_found = False
-    updated_orders = []
-    canceled_order_details = []  # List to store canceled order's product details
+    canceled_order_details = []
 
     for order in orders:
         if order.get("order_id") == order_id:
             order_found = True
-            print(f"Order {order_id} found. It will be canceled.")
-            # Store product details for stock update
             canceled_order_details = order.get("order_details", [])
-        else:
-            updated_orders.append(order)
-
+            print(f"Order {order_id} found. It will be canceled.")
+            break
+    
     if order_found:
-        # Write the updated list of orders back to the file
+        # Update inventory based on the canceled order
+        update_inventory_stock(canceled_order_details)
+
+        # Remove the order from the order history
+        updated_orders = [order for order in orders if order.get("order_id") != order_id]
+        
         with open("orders.txt", "w") as file:
             for order in updated_orders:
-                # Write each order as a JSON string on a new line
                 json.dump(order, file)
-                file.write("\n")  # Add a newline between orders
+                file.write("\n")  # Add newline after each order
         
         print(f"Order {order_id} has been successfully canceled and removed from your order history.")
-        
-        # Update stock quantities based on canceled order details
-        update_inventory_stock(canceled_order_details)
     else:
         print(f"Order ID {order_id} not found in your order history.")
 
 def update_inventory_stock(canceled_order_details):
-    """Increase stock quantity based on the canceled order details."""
-    # Load inventory data from the inventory.txt file
+    """Update stock, Sold, and Returned based on checkout or cancellation."""
+    # Read the inventory data from the inventory.txt file
     try:
         with open("inventory.txt", "r") as file:
             lines = file.readlines()
@@ -105,27 +100,38 @@ def update_inventory_stock(canceled_order_details):
     product_name = None
     for i, line in enumerate(lines):
         if "Name:" in line:
-            product_name = line.split(":")[1].strip()  # Get product name from the line
+            product_name = line.split(":")[1].strip()  # Get product name
         
         if "Stock Quantity:" in line:
-            # Check if the canceled order has this product
-            for order_item in canceled_order_details:
+            for order_item in canceled_order_details or []:  # Update for canceled orders
                 if order_item["product_name"] == product_name:
-                    quantity_to_add = order_item["quantity"]
-                    # Extract the current stock and add the canceled quantity
+                    quantity_to_update = order_item["quantity"]
+                    # Extract the current stock, Sold, and Returned values
                     current_stock = int(line.split(":")[1].strip())
-                    updated_stock = current_stock + quantity_to_add
-                    # Modify the existing Stock Quantity line with updated stock
+                    updated_stock = current_stock + quantity_to_update
                     lines[i] = f"Stock Quantity: {updated_stock}\n"
-                    break
+        
+        if "Sold:" in line:
+            for order_item in canceled_order_details or []:
+                if order_item["product_name"] == product_name:
+                    # Adjust Sold and Returned quantities based on cancellation
+                    current_sold = int(line.split(":")[1].strip())
+                    current_returned = int(lines[i+1].split(":")[1].strip())  # The next line has "Returned"
+                    
+                    # Increase Returned and decrease Sold
+                    updated_sold = max(0, current_sold - order_item["quantity"])  # Sold cannot be negative
+                    updated_returned = current_returned + order_item["quantity"]
+                    
+                    lines[i] = f"Sold: {updated_sold}\n"
+                    lines[i+1] = f"Returned: {updated_returned}\n"
         
         updated_lines.append(line)
 
-    # Write the updated inventory back to the file
+    # Write the updated inventory data back to the file
     with open("inventory.txt", "w") as file:
         file.writelines(lines)
 
-    print("Stock quantities updated successfully.")
+    print("Inventory updated successfully.")
 
 def view_cart(customer):
     print(f"\nCart for Customer {customer.customer_id}")
@@ -213,7 +219,7 @@ def view_cart(customer):
             break
 
         elif choice == "2":
-            checkout_all_products(customer, cart_items)
+            checkout_all_products(customer)
             break
 
         elif choice == "3":
@@ -315,7 +321,13 @@ def checkout_product(customer, product_name, quantity, price):
         if current_stock < quantity:
             print("Not enough stock to fulfill this order.")
             return
+        
+        # Update the stock (only decrement here)
         Product.update_stock(product_data["Product ID"], current_stock - quantity)
+        
+        # Update the Sold quantity in the inventory
+        update_sold_and_returned_quantities(product_data["Product ID"], quantity, is_checkout=True)
+        
         print(f"Order for {product_name} has been placed, and inventory updated.")
     else:
         print("Product not found in inventory.")
@@ -326,9 +338,101 @@ def checkout_product(customer, product_name, quantity, price):
     # Update the cart.txt file with the new cart content
     customer.cart.update_cart_file()
 
-def checkout_all_products(customer, cart_items):
+def update_sold_and_returned_quantities(product_id, quantity, is_checkout=True):
+    """Update the Sold and Returned quantities in the inventory based on checkout or cancellation."""
+    try:
+        with open("inventory.txt", "r") as file:
+            lines = file.readlines()
+    except FileNotFoundError:
+        print("Inventory file not found.")
+        return
+
+    updated_lines = []
+    product_found = False
+    updating_product = False
+
+    for i, line in enumerate(lines):
+        if "Product ID:" in line:
+            current_product_id = line.split(":")[1].strip()
+            
+            # Only update the product we are looking for
+            if current_product_id == product_id:
+                product_found = True
+                updating_product = True  # Begin updating this product's data
+
+        if updating_product:
+            # Update the 'Sold' field for the found product
+            if "Sold:" in line and product_found:
+                current_sold = int(line.split(":")[1].strip())
+                updated_sold = current_sold + quantity if is_checkout else max(0, current_sold - quantity)
+                line = f"Sold: {updated_sold}\n"
+
+            # Update the 'Returned' field for the found product
+            elif "Returned:" in line and product_found:
+                current_returned = int(line.split(":")[1].strip())
+                updated_returned = current_returned + (quantity if not is_checkout else 0)
+                line = f"Returned: {updated_returned}\n"
+
+            # After updating the relevant fields, stop updating this product
+            if "Review:" in line:  # Assuming the "Review" line is after all the other fields
+                updating_product = False
+
+        # Add the updated or unchanged line to the final list
+        updated_lines.append(line)
+
+    if product_found:
+        # Write the updated inventory back to the file
+        with open("inventory.txt", "w") as file:
+            file.writelines(updated_lines)
+        print("Inventory updated successfully.")
+    else:
+        print("Product ID not found in inventory.")
+
+def parse_cart_file(customer_id, file_path="cart.txt"):
+    """Parse the cart.txt file and return a list of cart items for the given customer."""
+    cart_items = []
+    with open(file_path, "r") as file:
+        lines = file.readlines()
+
+    in_customer_cart = False
+    for line in lines:
+        line = line.strip()
+        if line.startswith(f"Customer ID: {customer_id}"):
+            in_customer_cart = True
+            continue
+        elif line.startswith("Customer ID:") and in_customer_cart:
+            # End of this customer's cart
+            break
+        elif in_customer_cart and line.startswith("Total:"):
+            # Stop parsing once the total is reached
+            break
+        elif in_customer_cart and ":" in line:
+            # Extract product details
+            try:
+                product_info, total_price = line.split("--")
+                product_details = product_info.split(", Price:")
+                product_name, quantity = product_details[0].split(":")
+                price = product_details[1]
+                cart_items.append({
+                    "product_name": product_name.strip(),
+                    "quantity": int(quantity.strip()),
+                    "price": float(price.strip())
+                })
+            except ValueError:
+                continue
+
+    return cart_items
+
+def checkout_all_products(customer):
+    # Parse the cart file for the customer's cart items
+    cart_items = parse_cart_file(customer.customer_id)
+    
+    if not cart_items:
+        print("Your cart is empty. Nothing to checkout.")
+        return
+
     # Calculate total amount for all items
-    total_amount = sum(item["total_price"] for item in cart_items)
+    total_amount = sum(item["price"] * item["quantity"] for item in cart_items)
     
     # Create a payment instance and choose a payment method
     payment = Payment(payment_id=f"P{datetime.now().timestamp()}", order_id=customer.customer_id, amount=total_amount)
@@ -338,10 +442,28 @@ def checkout_all_products(customer, cart_items):
     # Place the order and save it to orders.txt
     customer.place_order(payment_mode=payment.payment_method)
 
-    # Update inventory stock
-    update_stock_quantity(cart_items, "inventory.txt")
+    # Update inventory stock and sold quantity
+    for item in cart_items:
+        product_name = item["product_name"]
+        quantity = item["quantity"]
+        product_data = Product.get_product_details_by_name(product_name)
 
-    # Clear cart file
+        if product_data:
+            product_id = product_data["Product ID"]
+
+            # Update stock quantity
+            current_stock = int(product_data["Stock Quantity"])
+            if current_stock < quantity:
+                print(f"Not enough stock for {product_name}. Order could not be completed.")
+                return
+            Product.update_stock(product_id, current_stock - quantity)
+
+            # Update the Sold quantity
+            update_sold_and_returned_quantities(product_id, quantity, is_checkout=True)
+        else:
+            print(f"Product {product_name} not found in inventory.")
+
+    # Clear cart after checkout
     with open("cart.txt", "r") as file:
         lines = file.readlines()
 
@@ -359,6 +481,7 @@ def checkout_all_products(customer, cart_items):
 
     print("All items in your cart have been checked out and removed.")
     print("Order has been placed and saved to order history.")
+
 
 def load_inventory_mapping(file_path):
     """
